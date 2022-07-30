@@ -1,12 +1,13 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import axios from "axios"
 import { useParams } from 'react-router-dom'
-import chars from "../../assets/characters.json"
 import CharacterCard from './CharacterCard'
 import "./style.css"
 import logo from "../../assets/images/logo.png"
 import RocketLoader from '../Loaders/RocketLoader'
 import FetchingLoader from '../Loaders/FetchingLoader'
+import SearchBar from "../SearchBar/SearchBar"
+import FiltersBar from './FiltersBar'
 
 const fetchData = async (query, limit) => {
   return await axios({
@@ -52,8 +53,6 @@ const Characters = () => {
   const [characters, setCharacters] = useState([])
   const { query } = useParams()
   const [loading, setLoading] = useState(true)
-  const [order, setOrder] = useState("asc")
-  const [sortBy, setSortBy] = useState("")
   const [limit, setLimit] = useState(30)
   const [showLoadMore, setShowLoadMore] = useState(false)
   const [fetching, setFetching] = useState(false)
@@ -87,6 +86,9 @@ const Characters = () => {
     // godina rođenja dolazi u formatu stringa npr.19BBY ili 19ABY
     // BBY - before battle of yavin
     // ABY - after battel of yavin
+
+    console.log(value, order);
+
     if(value === "age"){
 
       // odvajanje BBY i ABY
@@ -127,7 +129,7 @@ const Characters = () => {
       else if(order === "desc") setCharacters(BBY.concat(ABY))
 
     } else if(value === "height"){
-        setCharacters(characters.sort((a, b) => {
+        setCharacters([...characters.sort((a, b) => {
           if ( parseInt(a.height) < parseInt(b.height) ){
             return order === "asc" ? -1 : 1;
           }
@@ -135,41 +137,21 @@ const Characters = () => {
             return order === "asc" ? 1 : -1;
           }
           return 0;
-      }))
+      })])
     }
   }
-  
+
+
   return (
     <>
       {loading ? <RocketLoader/> : <div className='characters-container'>
         <img className='logo' src={logo} alt=""/>
-        {/* <h1 className='movie-title'>Movie: {movieTitle}</h1> */}
-        <div className='filters-container'>
-          <select defaultValue={sortBy} onChange={(e) => {
-            setSortBy(e.target.value)
-            sortResults(e.target.value, order);
-            }}>
-            <option value="height">Height</option>
-            <option value="age">Age</option>
-          </select>
 
-          <select defaultValue={order} onChange={(e) => {
-            sortResults(sortBy, e.target.value)
-            setOrder(e.target.value)
-          }}>
-            <option value="asc">Ascending</option>
-            <option value="desc">Descending</option>
-          </select>
+        <SearchBar/>
+        
+        <h1 className='movie-title'>Movie: {movieTitle}</h1>
 
-          <select onChange={(e) => {
-            filterResults(e.target.value)
-          }}>
-            <option value="all">All</option>
-            <option value="male">Male</option>
-            <option value="female">Female</option>
-            <option value="hermaphrodite">Hermaphrodite</option>
-          </select>
-        </div>
+        <FiltersBar sortResults={sortResults} filterResults={filterResults}/>
 
         <div className='characters-grid'>
           {characters.map(character => <CharacterCard character={character} key={character.name}/>)}
