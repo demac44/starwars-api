@@ -9,6 +9,9 @@ import express from 'express'
 import { join, resolve } from 'path'
 import cors from "cors"
 
+import people from "./routes/api/people.js"
+
+
 const app = express()
 
 const __dirname = resolve()
@@ -23,6 +26,9 @@ app.use(cors({
     credentials: true,
     methods: ["GET","PUT","POST","DELETE","UPDATE","OPTIONS"]
 }))
+
+
+app.use("/api/people", people)
 
 
 app.get("*", (req, res) => {
