@@ -9,8 +9,7 @@ import express from 'express'
 import { join, resolve } from 'path'
 import cors from "cors"
 
-import people from "./routes/api/people.js"
-
+import api from "./routes/api/api.js"
 
 const app = express()
 
@@ -28,7 +27,7 @@ app.use(cors({
 }))
 
 
-app.use("/api/people", people)
+app.use("/api", api)
 
 
 app.get("*", (req, res) => {

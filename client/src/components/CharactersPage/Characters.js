@@ -1,6 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from "axios"
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import CharacterCard from './CharacterCard'
 import "./style.css"
 import logo from "../../assets/images/logo.png"
@@ -46,8 +46,8 @@ const fetchMore = async (query, limit, offset) => {
   })
 }
 
-let originalArray = []
 let movieTitle = ""
+let originalArray = []
 
 const Characters = () => {
   const [characters, setCharacters] = useState([])
@@ -86,8 +86,6 @@ const Characters = () => {
     // godina rođenja dolazi u formatu stringa npr.19BBY ili 19ABY
     // BBY - before battle of yavin
     // ABY - after battel of yavin
-
-    console.log(value, order);
 
     if(value === "age"){
 
@@ -145,29 +143,34 @@ const Characters = () => {
   return (
     <>
       {loading ? <RocketLoader/> : <div className='characters-container'>
-        <img className='logo' src={logo} alt=""/>
+        <Link to="/">
+          <img className='logo' src={logo} alt=""/>
+        </Link>
 
         <SearchBar/>
         
-        <h1 className='movie-title'>Movie: {movieTitle}</h1>
+        {characters.length > 0 ? <>
+          <h1 className='movie-title'>Movie: {movieTitle}</h1>
 
-        <FiltersBar sortResults={sortResults} filterResults={filterResults}/>
+          <FiltersBar sortResults={sortResults} filterResults={filterResults}/>
 
-        <div className='characters-grid'>
-          {characters.map(character => <CharacterCard character={character} key={character.name}/>)}
-        </div>
+          <div className='characters-grid'>
+            {characters.map(character => <CharacterCard character={character} key={character.name}/>)}
+          </div>
 
-        {fetching && <FetchingLoader/>}
+          {fetching && <FetchingLoader/>}
 
-        {(showLoadMore && !fetching) && <button className='load-more-btn' onClick={() => {
-          setFetching(true)
-          fetchMore(query, limit+30, limit).then(res => {
-            setCharacters([...characters, ...res.characters])
-            setShowLoadMore(res.showLoadMore)
-            setLimit(limit+30)
-          })
-          .then(() => setFetching(false))
-        }}>LOAD MORE</button>}
+          {(showLoadMore && !fetching) && <button className='load-more-btn' onClick={() => {
+            setFetching(true)
+            fetchMore(query, limit+30, limit).then(res => {
+              setCharacters([...characters, ...res.characters])
+              setShowLoadMore(res.showLoadMore)
+              setLimit(limit+30)
+            })
+            .then(() => setFetching(false))
+          }}>LOAD MORE</button>}
+
+        </> : <p className='no-results'>No results</p>}
       </div>}
     </>
   )

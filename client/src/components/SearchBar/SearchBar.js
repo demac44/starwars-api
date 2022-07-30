@@ -2,23 +2,37 @@ import React, { useState } from 'react'
 import "./style.css"
 
 const SearchBar = () => {
-    const [searchQuery, setSearchQuery] = useState("")
-
-    const search = (e) => {
+    const searchMovies = (e) => {
         e.preventDefault()
 
-        window.location.href = "/movies/"+searchQuery
+        window.location.href = "/movies/"+e.target.movies.value
+    }
+
+    
+    const searchPlanets = (e) => {
+        e.preventDefault()
+
+        window.location.href = "/planets/"+e.target.planets.value
     }
 
     return (
         <div className='search-container'>
-            <form onSubmit={search}>
+            <form onSubmit={searchMovies}>
                 <input 
+                    name="movies"
+                    id="movies"
                     type="text" 
-                    placeholder='Search...' 
+                    placeholder='Search movies...' 
                     className='search-input'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
+                    />
+            </form>
+            <form onSubmit={searchPlanets}>
+                <input 
+                    name="planets"
+                    id="planets"
+                    type="text" 
+                    placeholder='Search climates...' 
+                    className='search-input'
                     />
             </form>
         </div>
