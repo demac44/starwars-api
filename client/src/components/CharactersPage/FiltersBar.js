@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 
 const FiltersBar = ({sortResults, filterResults}) => {
     const [order, setOrder] = useState("asc")
-    const [sortBy, setSortBy] = useState("")
+    const [sortBy, setSortBy] = useState(null)
 
 
     return (
@@ -16,13 +16,13 @@ const FiltersBar = ({sortResults, filterResults}) => {
             <option value="age">Age</option>
             </select>
 
-            <select defaultValue={order} onChange={(e) => {
+            {sortBy && <select defaultValue={order} onChange={(e) => {
             sortResults(sortBy, e.target.value)
             setOrder(e.target.value)
             }}>
             <option value="asc">Ascending</option>
             <option value="desc">Descending</option>
-            </select>
+            </select>}
 
             <select onChange={(e) => {
             filterResults(e.target.value)

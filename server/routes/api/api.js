@@ -21,12 +21,32 @@ const peopleUrls = [
 
 let allCharacters = []
 
+
 await axios.all(peopleUrls.map(url => axios.get(url)))
 .then(axios.spread((...responses) => {
     for(let i=0;i<responses.length;i++){
         allCharacters = [...allCharacters, ...responses[i].data.results]
     }
 }))
+
+
+
+
+// let next = true
+// let page = 1
+
+// while(next){
+//     await axios.get(`https://swapi.dev/api/people/?page=${page}`)
+//     .then(response => {
+//         allCharacters = [...allCharacters, ...response.data.results]
+//         if(response.data.next){
+//             page += 1
+//         } else {
+//             next = false
+//             page = 1
+//         }
+//     })
+// }
 
 
 router.post("/people", async (req, res) => {
@@ -44,6 +64,7 @@ router.post("/people", async (req, res) => {
         }
     })
 
+    // intersection of all characters and searched movie characters
     const filmCharacters = allCharacters.filter(character => {
         return filmCharactersUrls.includes(character.url)
     })
@@ -88,10 +109,12 @@ router.post("/planets", (req, res) => {
     let filteredData = []
 
 
+    // filtering planets with searched climate
     let filteredPlanets = allPlanets.filter(planet => {
-        return planet.climate === climate
+        return planet.climate.includes(climate)
     })
 
+    // intersection of all characters and black haired residents of filtered planets 
     filteredPlanets.forEach(planet => {
         let residents = allCharacters.filter(character => {
             return planet.residents.includes(character.url)

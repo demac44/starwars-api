@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import axios from "axios"
 import { Link, useParams } from 'react-router-dom'
 import CharacterCard from './CharacterCard'
@@ -9,42 +9,6 @@ import FetchingLoader from '../Loaders/FetchingLoader'
 import SearchBar from "../SearchBar/SearchBar"
 import FiltersBar from './FiltersBar'
 
-const fetchData = async (query, limit) => {
-  return await axios({
-    method: "POST",
-    url: "/api/people",
-  data: {
-    query: query,
-    limit: limit,
-
-  },
-  withCredentials: true
-}).then(res => {
-    return {
-      characters: res.data.characters,
-      title: res.data.title,
-      showLoadMore: res.data.showLoadMore
-    }
-  })
-}
-
-const fetchMore = async (query, limit, offset) => {
-  return await axios({
-    method: "POST",
-    url: "/api/people",
-  data: {
-    query: query,
-    limit: limit,
-    offset: offset
-  },
-  withCredentials: true
-}).then(res => {
-    return {
-      characters: res.data.characters,
-      showLoadMore: res.data.showLoadMore
-    }
-  })
-}
 
 let movieTitle = ""
 let originalArray = []
@@ -81,23 +45,23 @@ const Characters = () => {
       }))
     }
   }
-
+  
   const sortResults = (value, order) => {
     // godina rođenja dolazi u formatu stringa npr.19BBY ili 19ABY
     // BBY - before battle of yavin
     // ABY - after battel of yavin
-
+    
     if(value === "age"){
-
+  
       // odvajanje BBY i ABY
       let BBY = characters.filter(character => {
         return character.birth_year.slice(-3) === "BBY"
       })
-
+  
       let ABY = characters.filter(character => {
         return character.birth_year.slice(-3) === "ABY"
       })
-
+  
       BBY = BBY.sort((a, b) => {
         // odvajanje godine rođenja i parsiranje stringa u broj
         a = parseInt(a.birth_year.slice(0, a.birth_year.indexOf("BBY")))
@@ -110,7 +74,7 @@ const Characters = () => {
         }
         return 0;
       })
-
+  
       ABY = ABY.sort((a, b) => {
         a = parseInt(a.birth_year.slice(0, a.birth_year.indexOf("ABY")))
         b = parseInt(b.birth_year.slice(0, b.birth_year.indexOf("ABY")))
@@ -122,10 +86,10 @@ const Characters = () => {
         }
         return 0;
       })
-
+  
       if(order === "asc") setCharacters(ABY.concat(BBY))
-      else if(order === "desc") setCharacters(BBY.concat(ABY))
-
+      else setCharacters(BBY.concat(ABY))
+  
     } else if(value === "height"){
         setCharacters([...characters.sort((a, b) => {
           if ( parseInt(a.height) < parseInt(b.height) ){
@@ -137,22 +101,25 @@ const Characters = () => {
           return 0;
       })])
     }
-  }
-
-
+    }
+  
   return (
     <>
       {loading ? <RocketLoader/> : <div className='characters-container'>
+
         <Link to="/">
           <img className='logo' src={logo} alt=""/>
         </Link>
 
         <SearchBar/>
         
-        {characters.length > 0 ? <>
+        {characters?.length > 0 ? <>
           <h1 className='movie-title'>Movie: {movieTitle}</h1>
 
-          <FiltersBar sortResults={sortResults} filterResults={filterResults}/>
+          <FiltersBar 
+            sortResults={sortResults} 
+            filterResults={filterResults}
+          />
 
           <div className='characters-grid'>
             {characters.map(character => <CharacterCard character={character} key={character.name}/>)}
@@ -162,7 +129,7 @@ const Characters = () => {
 
           {(showLoadMore && !fetching) && <button className='load-more-btn' onClick={() => {
             setFetching(true)
-            fetchMore(query, limit+30, limit).then(res => {
+            fetchData(query, limit+30, limit).then(res => {
               setCharacters([...characters, ...res.characters])
               setShowLoadMore(res.showLoadMore)
               setLimit(limit+30)
@@ -171,6 +138,7 @@ const Characters = () => {
           }}>LOAD MORE</button>}
 
         </> : <p className='no-results'>No results</p>}
+        
       </div>}
     </>
   )
@@ -178,4 +146,21 @@ const Characters = () => {
 
 export default Characters
 
-
+const fetchData = async (query, limit, offset) => {
+  return await axios({
+    method: "POST",
+    url: "/api/people",
+  data: {
+    query: query,
+    limit: limit,
+    offset: offset
+  },
+  withCredentials: true
+}).then(res => {
+    return {
+      characters: res.data.characters,
+      title: res.data.title,
+      showLoadMore: res.data.showLoadMore
+    }
+  })
+}

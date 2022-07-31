@@ -1,13 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
 import "./style.css"
 import bckgImg from "../../assets/images/bckg.jpg"
-import SearchBar from '../SearchBar/SearchBar'
+import HomepageSearch from '../SearchBar/HomepageSearch'
 
 
 const Homepage = () => {
     return (
         <div className='homepage-container'>
-            <SearchBar/>
+            <HomepageSearch/>
+
             <img src={bckgImg} alt="" className='bckg-img'/>
         </div>
     )

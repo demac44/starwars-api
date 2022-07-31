@@ -5,6 +5,7 @@ import { Link, useParams } from "react-router-dom"
 import Planet from './Planet'
 import logo from "../../assets/images/logo.png"
 import SearchBar from '../SearchBar/SearchBar'
+import RocketLoader from "../Loaders/RocketLoader"
 
 const fetchData = async (climate) => {
     return await axios({
@@ -24,17 +25,19 @@ const fetchData = async (climate) => {
 
 const Planets = () => {
     const [planets, setPlanets] = useState([])
+    const [loading, setLoading] = useState(true)
 
     const { climate } = useParams()
 
     useEffect(() => {
-        fetchData(climate).then(res => setPlanets(res.planets))
+        setLoading(true)
+        fetchData(climate).then(res => setPlanets(res.planets)).then(() => setLoading(false))
     }, [climate])
 
 
     return (
         <>
-            <div className='planets-container'>
+            {loading ? <RocketLoader/> : <div className='planets-container'>
                 <Link to="/">
                     <img className='logo' src={logo} alt=""/>
                 </Link>
@@ -47,7 +50,7 @@ const Planets = () => {
                 <div className='planets-grid'>
                     {planets?.map(planet => <Planet planet={planet}/>)}
                 </div> : <p className='no-results'>No results</p>}
-            </div>
+            </div>}
         </>
     )
 }
