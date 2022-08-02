@@ -1,10 +1,5 @@
 # StarWars API
 
-## Requirements
-
-- NodeJS v16.13.2 or higher
-- npm v8.1.3 or higher
-
 ## Installation
 
 1. Download the project and unzip it
